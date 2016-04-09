@@ -36,7 +36,12 @@ def get_restaurant(session, restaurant_id):
 
 # Add new restaurant
 def add_restaurant(session, data):
-    new_restaurant = Restaurant(name=data['name'], user_id=data['user_id'])
+    new_restaurant = Restaurant(name=data['name'])
+    mapper = inspect(Restaurant)
+    for key in data:
+        for column in mapper.attrs:
+            if key == column.key:
+                setattr(new_restaurant, key, data[key])
     session.add(new_restaurant)
     session.commit()
     return new_restaurant

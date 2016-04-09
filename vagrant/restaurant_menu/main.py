@@ -1,3 +1,4 @@
+# encoding=utf8
 from flask import Flask, render_template, redirect, url_for, request
 from flask import jsonify, flash
 from flask import session as login_session
@@ -17,6 +18,11 @@ from database_helper import get_menu_item, get_restaurant
 from database_helper import get_restaurants, get_restaurant_items
 from database_helper import get_ordered_restaurants
 from database_helper import createUser, getUserInfo, getUserId
+from utils import findARestaurant
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 # Initialization
 app = Flask(__name__)
@@ -25,189 +31,55 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
 
-@app.route('/')
-@app.route('/restaurants/')
-def listRestaurants():
-    restaurants = get_restaurants(session)
-    user = None
-    userId = login_session.get('user_id')
-    if userId:
-        user = getUserInfo(session, userId)
-    return render_template('restaurants.html',
-                           restaurants=restaurants,
-                           user=user)
-
-
-@app.route('/restaurant/<int:restaurant_id>/')
-@app.route('/restaurant/<int:restaurant_id>/menu/')
-def restaurantMenu(restaurant_id):
-    restaurant = get_restaurant(session, restaurant_id)
-    items = get_restaurant_items(session, restaurant)
-    user = None
-    userId = login_session.get('user_id')
-    if userId:
-        user = getUserInfo(session, userId)
-    return render_template('menu.html',
-                           restaurant=restaurant,
-                           items=items,
-                           user=user)
-
-
-@app.route('/restaurant/new', methods=['GET', 'POST'])
-def newRestaurant():
-    if 'username' not in login_session:
-        print 'Redirecting'
-        return redirect(url_for('showLogin'))
-    else:
-        print 'Logged in with user' + login_session.get('username')
-    if request.method == 'POST':
-        new_restaurant = add_restaurant(session, {
-            'name': request.form['name'],
-            'user_id': login_session.get('user_id')
-            })
-        flash(new_restaurant.name + ' restaurant created.')
-        return redirect(url_for('listRestaurants'))
-    else:
-        return render_template('newRestaurant.html')
-
-
-@app.route('/restaurant/<int:restaurant_id>/edit', methods=['GET', 'POST'])
-def editRestaurant(restaurant_id):
-    if 'username' not in login_session:
-        redirect('/login')
-    restaurant = get_restaurant(session, restaurant_id)
-    userId = login_session.get('user_id')
-    if restaurant.user_id == userId:
-        if request.method == 'POST':
-            edited_restaurant = edit_restaurant(session,
-                                                restaurant_id,
-                                                request.form)
-            flash(edited_restaurant.name + ' successfully edited')
-            return redirect(url_for('listRestaurants'))
-        else:
-            return render_template('editRestaurant.html',
-                                   restaurant=restaurant)
-    else:
-        flash("You don't have authorization to edit that restaurant")
-        return redirect(url_for('listRestaurants'))
-
-
-@app.route('/restaurant/<int:restaurant_id>/delete', methods=['GET', 'POST'])
-def deleteRestaurant(restaurant_id):
-    if 'username' not in login_session:
-        redirect('/login')
-    restaurant = get_restaurant(session, restaurant_id)
-    userId = login_session.get('user_id')
-    if restaurant.user_id == userId:
-        if request.method == 'POST':
-            restaurant_deleted = delete_restaurant(session, restaurant)
-            if restaurant_deleted:
-                flash('Restaurant successfully deleted.')
-            else:
-                flash('Restaurant cannot be deleted. Please, try again later.')
-            return redirect(url_for('listRestaurants'))
-        else:
-            return render_template('deleteRestaurant.html',
-                                   restaurant=restaurant)
-    else:
-        flash("You don't have authorization to delete that restaurant")
-        return redirect(url_for('listRestaurants'))
-
-
-@app.route('/restaurant/<int:restaurant_id>/menu/item/new',
-           methods=['GET', 'POST'])
-def newMenuItem(restaurant_id):
-    if 'username' not in login_session:
-        redirect('/login')
-    restaurant = get_restaurant(session, restaurant_id)
-    userId = login_session.get('user_id')
-    if restaurant.user_id == userId:
-        if request.method == 'POST':
-            new_item = add_menu_item(session,
-                                     restaurant,
-                                     request.form)
-            flash(new_item.name + ' menu item successfully added.')
-            return redirect(url_for('restaurantMenu',
-                                    restaurant_id=restaurant_id))
-        else:
-            return render_template('newMenuItem.html',
-                                   restaurant=restaurant)
-    else:
-        flash("You don't have authorization to create a\
-              new item on that restaurant")
-        return redirect(url_for('restaurantMenu',
-                                restaurant_id=restaurant_id))
-
-
-@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/edit',
-           methods=['GET', 'POST'])
-def editMenuItem(restaurant_id, item_id):
-    if 'username' not in login_session:
-        redirect('/login')
-    menu_item = get_menu_item(session, item_id)
-    restaurant = get_restaurant(session, restaurant_id)
-    userId = login_session.get('user_id')
-    if restaurant.user_id == userId:
-        if request.method == 'POST':
-            edited_item = edit_menu_item(session, menu_item, request.form)
-            flash(edited_item.name + ' successfully edited.')
-        else:
-            return render_template('editMenuItem.html',
-                                   restaurant=restaurant,
-                                   item=menu_item)
-    else:
-        flash("You don't have authorization to edit that item")
-        return redirect(url_for('restaurantMenu', restaurant_id=restaurant.id))
-
-
-@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/delete',
-           methods=['GET', 'POST'])
-def deleteMenuItem(restaurant_id, item_id):
-    if 'username' not in login_session:
-        redirect('/login')
-    menu_item = get_menu_item(session, item_id)
-    restaurant = get_restaurant(session, restaurant_id)
-    userId = login_session.get('user_id')
-    if restaurant.user_id == userId:
-        if request.method == 'POST':
-            item_deleted = delete_menu_item(session, menu_item)
-            if item_deleted:
-                flash('Item successfully deleted.')
-            return redirect(url_for('restaurantMenu',
-                                    restaurant_id=restaurant.id))
-        else:
-            return render_template('deleteMenuItem.html',
-                                   restaurant=restaurant,
-                                   item=menu_item)
-    else:
-        flash("You don't have authorization to delete that item")
-        return redirect(url_for('restaurantMenu', restaurant_id=restaurant.id))
-
-
 # Restaurant Menu APP API
 
-@app.route('/restaurants/JSON&order_by=<path:ordering_attr>')
-def listRestaurantsJSON(ordering_attr):
-    restaurants = get_ordered_restaurants(session, ordering_attr)
-    if restaurants:
-        return jsonify(Restaurants=[
-            restaurant.serialize for restaurant in restaurants
+@app.route('/restaurants', methods=['GET', 'POST'])
+def all_restaurants_handler():
+    if request.method == 'GET':
+        if request.args.get('order_by'):
+            ordering_attr = request.args.get('order_by', '')
+            restaurants = get_ordered_restaurants(session, ordering_attr)
+        else:
+            restaurants = get_restaurants(session)
+        return jsonify(restaurants=[
+                restaurant.serialize for restaurant in restaurants
             ])
-    else:
-        return jsonify(Restaurants=restaurants)
+    if request.method == 'POST':
+        if (request.args.get('location') and request.args.get('mealType')):
+            location = request.args.get('location', '')
+            mealType = request.args.get('mealType', '')
+            restaurant_data = findARestaurant(mealType, location)
+            print restaurant_data
+            new_restaurant = add_restaurant(session, restaurant_data)
+            return jsonify(restaurant=new_restaurant.serialize)
+        else:
+            response = make_response(json.dumps('Invalid request'), 400)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/JSON')
-def restaurantMenuJSON(restaurant_id):
-    restaurant = get_restaurant(session, restaurant_id)
-    items = get_restaurant_items(session, restaurant)
-    return jsonify(MenuItems=[item.serialize for item in items])
-
-
-@app.route('/restaurant/<int:restaurant_id>/menu/item/<int:item_id>/JSON')
-def restaurantMenuItemJSON(restaurant_id, item_id):
-    menu_item = get_menu_item(session, item_id)
-    return jsonify(MenuItem=menu_item.serialize)
+@app.route('/restaurants/<int:restaurant_id>',
+           methods=['GET', 'PUT', 'DELETE'])
+def restaurant_handler(restaurant_id):
+    if request.method == 'GET':
+        restaurant = get_restaurant(session, restaurant_id)
+        return jsonify(restaurant=restaurant.serialize)
+    if request.method == 'PUT':
+        edited_restaurant = edit_restaurant(session,
+                                            restaurant_id,
+                                            request.args)
+        return jsonify(restaurant=edited_restaurant.serialize)
+    if request.method == 'DELETE':
+        restaurant = get_restaurant(session, restaurant_id)
+        restaurant_deleted = delete_restaurant(session, restaurant)
+        if restaurant_deleted:
+            response = make_response(json.dumps('Restaurant deleted'), 200)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+        else:
+            response = make_response(json.dumps('Error deleting restaurant'), 500)
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
 
 # Login management

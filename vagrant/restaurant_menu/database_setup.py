@@ -30,6 +30,8 @@ class Restaurant(Base):
 
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
+    address = Column(String)
+    image = Column(String)
     # Defining One to Many relationships with the relationship
     # function on the Parent Table
     menu_items = relationship('MenuItem',
@@ -44,7 +46,9 @@ class Restaurant(Base):
         # Returns object data in easily serializable format
         return {
                 'id': self.id,
-                'name': self.name,
+                'restaurant_name': self.name,
+                'restaurant_address': self.address,
+                'restaurant_image': self.image
         }
 
 

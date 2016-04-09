@@ -1,8 +1,10 @@
-import json
-import httplib2
+import sys
+import codecs
 from geocode import getGeocodeLocation
 from foursquare_helper import findNearbyRestaurantsByMealType
-from foursquare_helper import getCategoryId, getVenuePhotos
+from foursquare_helper import getVenuePhotos
+sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
 
 def findARestaurant(mealType, location):
