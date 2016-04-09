@@ -1,0 +1,327 @@
+body {
+    font-family: sans-serif;    
+    
+    margin: 0px;
+}
+
+h1,
+h2,
+h3,
+h4 { 
+    color: #FFFFFF; 
+}
+
+h1,
+h2 {
+    font-family: 'Georgia',
+    serif; margin: 0; 
+}
+
+h2 {
+    font-size: 1.2em; 
+}
+
+p,
+dd,
+dt {
+    color: #333;
+}
+
+input,
+textarea {
+    border-radius: 2px;
+    border: 1px solid #EAEAEA;
+    font-size: 1em;
+    padding: 5px;
+    width: 100%;
+}
+
+a {
+    text-decoration: none;    
+}
+
+.messages {
+    list-style: none;
+    text-align: center;
+    margin: 20px 0px;
+    padding: 0;
+    li {
+        max-width: 600px;
+        padding: 10px;
+        margin: 0 auto;
+        background-color: beige;
+        border-radius: 2px;
+    }    
+}
+
+.back-button {
+    color: #EAEAEA;
+}
+
+body.home {
+    .header {
+        background: url(../images/restaurant-bg.jpeg) no-repeat bottom center; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        height: 200px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0px 0px 10px #ccc;
+        h1 {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+        }
+    }
+    .container {
+        max-width: 640px;
+        margin: 30px auto;
+        .top-actions {
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            a {
+                background-color: #111;
+                padding: 10px;
+                border-radius: 2px;
+                box-shadow: 0px 5px 10px #ccc;
+                color: #EAEAEA;
+                font-size: .75em;
+            }            
+        }
+        .restaurants {  
+            .restaurant-container {
+                display: inline-block;
+                width: 50%;
+                float: left;
+                height: 200px;
+                margin-bottom: 45px;                
+                .wrapper {
+                    padding: 10px;
+                    position: relative;
+                    .restaurant {                    
+                        background-color: white;
+                        padding: 10px;
+                        height: 100%;
+                        border-radius: 2px;
+                        box-shadow: 0px 0px 10px #ccc;
+                        .name {
+                            font-size: 1.5em;
+                            display: inline-block;
+                        }
+                        .price {
+                            display: inline-block;
+                            color: gray;                            
+                        }
+                        .description {
+                            border-top: 1px solid #EAEAEA;
+                            padding-top: 5px;
+                            margin-top: 5px;
+                        }
+                        .actions {
+                            position: absolute;
+                            bottom: 0;
+                            right: 10px;
+                            padding: 10px;
+                            margin-top: 10px;
+                            margin-bottom: 20px;
+                            a {
+                                padding: 10px;
+                                color: gray;
+                                background-color: transparent;                                
+                                font-size: .75em;
+                            }                            
+                        }
+                    }
+                }                        
+            }                  
+        }
+    }
+}
+
+body.restaurant {
+    .header {
+        background: url(../images/restaurant-bg.jpeg) no-repeat bottom center; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        height: 200px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0px 0px 10px #ccc;
+        h1 {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+        }
+    }
+    .container {
+        max-width: 640px;
+        margin: 30px auto;
+        .top-actions {
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            a {
+                background-color: #111;
+                padding: 10px;
+                border-radius: 2px;
+                box-shadow: 0px 0px 10px #ccc;
+                color: #EAEAEA;
+                font-size: .75em;
+            }            
+        }
+        .items {  
+            .item-container {
+                display: inline-block;
+                width: 50%;
+                float: left;
+                height: 200px;
+                margin-bottom: 45px;                
+                .wrapper {
+                    padding: 10px;
+                    position: relative;
+                    .item {                    
+                        background-color: white;
+                        padding: 10px;
+                        height: 100%;
+                        border-radius: 2px;
+                        box-shadow: 0px 0px 10px #ccc;
+                        .name {
+                            font-size: 1.5em;
+                            display: inline-block;
+                        }
+                        .course {
+                            display: inline-block;
+                            color: gray;
+                            font-size: .75em;                           
+                        }
+                        .description {
+                            border-top: 1px solid #EAEAEA;
+                            padding-top: 5px;
+                            margin-top: 5px;
+                        }
+                        .price {
+                            position: absolute;
+                            bottom: 0;
+                            left: 10px;
+                            padding: 10px;
+                            margin-top: 10px;
+                            margin-bottom: 20px;
+                        }
+                        .actions {
+                            position: absolute;
+                            bottom: 0;
+                            right: 10px;
+                            padding: 10px;
+                            margin-top: 10px;
+                            margin-bottom: 20px;
+                            a {
+                                padding: 10px;
+                                color: gray;
+                                background-color: transparent;
+                                font-size: .75em;
+                            }                            
+                        }
+                    }
+                }                        
+            }                  
+        }
+    }
+}
+
+body.item-form {
+    .header {
+        background: url(../images/restaurant-bg.jpeg) no-repeat bottom center; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        height: 150px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0px 0px 10px #ccc;
+        h1 {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+        }
+    }
+    .container {
+        max-width: 640px;
+        margin: 30px auto;
+        .title {
+            margin-bottom: 30px;
+        }
+        .form {
+            background-color: white;
+            padding: 10px;
+            border-radius: 2px;
+            box-shadow: 0px 0px 10px #ccc;
+            color: #EAEAEA;
+            input[type="radio"]{
+                width: auto;                               
+            }
+            span {
+                color: #333;
+            } 
+        }
+        .items {  
+            .item-container {
+                display: inline-block;
+                width: 50%;
+                float: left;
+                height: 200px;
+                margin-bottom: 45px;                
+                .wrapper {
+                    padding: 10px;
+                    position: relative;
+                    .item {                    
+                        background-color: white;
+                        padding: 10px;
+                        height: 100%;
+                        border-radius: 2px;
+                        box-shadow: 0px 0px 10px #ccc;
+                        .name {
+                            font-size: 1.5em;
+                            display: inline-block;
+                        }
+                        .price {
+                            display: inline-block;
+                            color: gray;                            
+                        }
+                        .description {
+                            border-top: 1px solid #EAEAEA;
+                            padding-top: 5px;
+                            margin-top: 5px;
+                        }
+                        .actions {
+                            position: absolute;
+                            bottom: 0;
+                            right: 10px;
+                            padding: 10px;
+                            margin-top: 10px;
+                            margin-bottom: 20px;
+                            a {
+                                padding: 10px;
+                                color: gray;
+                                background-color: transparent;
+                                font-size: .75em;
+                            }                            
+                        }
+                    }
+                }                        
+            }                  
+        }
+    }
+}
+
+.clearfix {
+    overflow: auto;
+}

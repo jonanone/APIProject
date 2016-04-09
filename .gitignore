@@ -1,0 +1,4 @@
+vagrant/restaurant_menu/node_modules
+secret_keys.py
+fb_client_secrets.json
+client_secrets.json
