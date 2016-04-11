@@ -111,6 +111,22 @@ def delete_menu_item(session, menu_item):
 
 
 # User management
+def addUser(session, username, password):
+    user = User(username=username)
+    user.hash_password(password)
+    session.add(user)
+    session.commit()
+    return user
+
+
+def getUser(session, username):
+    try:
+        user = session.query(User).filter_by(username=username).one()
+        return user
+    except:
+        return None
+
+
 def createUser(session, login_session):
     newUser = User(name=login_session['username'],
                    email=login_session['email'],

@@ -1,8 +1,9 @@
 # encoding=utf8
 from flask import Flask, render_template, redirect, url_for, request
-from flask import jsonify, flash
+from flask import jsonify, flash, abort, g
 from flask import session as login_session
 from flask import make_response
+from flask.ext.httpauth import HTTPBasicAuth
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
@@ -18,6 +19,7 @@ from database_helper import get_menu_item, get_restaurant
 from database_helper import get_restaurants, get_restaurant_items
 from database_helper import get_ordered_restaurants
 from database_helper import createUser, getUserInfo, getUserId
+from database_helper import getUser, addUser
 from utils import findARestaurant
 
 import sys
@@ -25,6 +27,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 # Initialization
+auth = HTTPBasicAuth()
 app = Flask(__name__)
 session = db_init()
 CLIENT_ID = json.loads(
@@ -80,6 +83,34 @@ def restaurant_handler(restaurant_id):
             response = make_response(json.dumps('Error deleting restaurant'), 500)
             response.headers['Content-Type'] = 'application/json'
             return response
+
+
+@app.route('/protected_resource')
+@auth.login_required
+def get_resource():
+    return jsonify({'data': 'Hello, %s!' % g.user.username})
+
+
+# User Management
+@app.route('/users', methods=['POST'])
+def new_user():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    if username is None or password is None:
+        abort(400)  # missing arguments
+    if getUser(session, username) is not None:
+        abort(400)  # existing user
+    user = addUser(session, username, password)
+    return jsonify({'username': user.username}), 201
+
+
+@auth.verify_password
+def verify_password(username, password):
+    user = getUser(session, username)
+    if not user or not user.verify_password(password):
+        return False
+    g.user = user
+    return True
 
 
 # Login management
@@ -330,4 +361,6 @@ def disconnect():
 if __name__ == '__main__':
     app.secret_key = 'SUPER_SECRET_KEY'
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    # app.run(host='0.0.0.0', port=5000)
+    context = ('server.crt', 'server.key')
+    app.run(host='0.0.0.0', port=5000, ssl_context=context)

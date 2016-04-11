@@ -9,42 +9,43 @@ sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
 print "Running Endpoint Tester....\n"
-address = raw_input("Please enter the address of the server you want to access, \n If left blank the connection will be set to 'http://localhost:5000':   ")
+address = raw_input("Please enter the address of the server you want to access, \n If left blank the connection will be set to 'https://localhost:5000':   ")
 if address == '':
-    address = 'http://localhost:5000'
+    address = 'https://localhost:5000'
 #TEST ONE -- CREATE NEW RESTAURANTS
 try:
     print "Test 1: Creating new Restaurants......"
     url = address + '/restaurants?location=Buenos+Aires+Argentina&mealType=Sushi'
-    h = httplib2.Http()
+    h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
+
     resp, result = h.request(url,'POST')
     if resp['status'] != '200':
         raise Exception('Received an unsuccessful status code of %s' % resp['status'])
     print json.loads(result)
 
     url = address + '/restaurants?location=Denver+Colorado&mealType=Soup'
-    h = httplib2.Http()
+    h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
     resp, result = h.request(url,'POST')
     if resp['status'] != '200':
         raise Exception('Received an unsuccessful status code of %s' % resp['status'])
     print json.loads(result)
 
     url = address + '/restaurants?location=Prague+Czech+Republic&mealType=Crepes'
-    h = httplib2.Http()
+    h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
     resp, result = h.request(url,'POST')
     if resp['status'] != '200':
         raise Exception('Received an unsuccessful status code of %s' % resp['status'])
     print json.loads(result).iteritems()
 
     url = address + '/restaurants?location=Shanghai+China&mealType=Sandwiches'
-    h = httplib2.Http()
+    h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
     resp, result = h.request(url,'POST')
     if resp['status'] != '200':
         raise Exception('Received an unsuccessful status code of %s' % resp['status'])
     print json.loads(result)
 
     url = address + '/restaurants?location=Nairobi+Kenya&mealType=Pizza'
-    h = httplib2.Http()
+    h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
     resp, result = h.request(url,'POST')
     if resp['status'] != '200':
         raise Exception('Received an unsuccessful status code of %s' % resp['status'])
@@ -61,7 +62,7 @@ else:
 try:
     print "Attempting Test 2: Reading all Restaurants..."
     url = address + "/restaurants"
-    h = httplib2.Http()
+    h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
     resp, result = h.request(url,'GET')
     if resp['status'] != '200':
         raise Exception('Received an unsuccessful status code of %s' % resp['status'])
@@ -80,7 +81,7 @@ else:
         result = all_result
         restID = result['restaurants'][len(result['restaurants'])-1]['id']
         url = address + "/restaurants/%s" % restID
-        h = httplib2.Http()
+        h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
         resp, result = h.request(url,'GET')
         if resp['status'] != '200':
             raise Exception('Received an unsuccessful status code of %s' % resp['status'])
@@ -99,7 +100,7 @@ else:
         result = all_result
         restID = result['restaurants'][0]['id']
         url = address + "/restaurants/%s?name=Udacity&address=2465+Latham+Street+Mountain+View+CA&image=https://media.glassdoor.com/l/70/82/fc/e8/students-first.jpg" % restID
-        h = httplib2.Http()
+        h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
         resp, result = h.request(url,'PUT')
         if resp['status'] != '200':
             raise Exception('Received an unsuccessful status code of %s' % resp['status'])
@@ -118,7 +119,7 @@ try:
         result = all_result
         restID = result['restaurants'][1]['id']
         url = address + "/restaurants/%s" % restID
-        h = httplib2.Http()
+        h = httplib2.Http(".cache", disable_ssl_certificate_validation=True)
         resp, result = h.request(url,'DELETE')
         if resp['status'] != '200':
             raise Exception('Received an unsuccessful status code of %s' % resp['status'])
