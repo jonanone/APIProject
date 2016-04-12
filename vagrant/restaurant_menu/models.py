@@ -19,9 +19,9 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(32), index=True)
     password_hash = Column(String(64))
-    name = Column(String(80), nullable=True)
-    email = Column(String(250), nullable=True)
-    picture = Column(String(250), nullable=True)
+    name = Column(String(80))
+    email = Column(String(250), index=True)
+    picture = Column(String(250))
 
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)

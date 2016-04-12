@@ -13,16 +13,13 @@
                 $('#signInButton').hide();
                 $.ajax({
                     type: 'POST',
-                    url: '/gconnect?state={{ STATE }}',
+                    url: '/oauth/google?state={{ STATE }}',
                     processData: false,
                     contentType: 'application/octet-stream; charset=utf-8',
                     data: authResult['code'],
                     success: function(result){
                         if (result) {
-                            $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...');
-                            setTimeout(function() {
-                                window.location.href = '/restaurants';
-                            }, 3000);
+                            $('#result').html('Login Successful!</br>' + result['token'] + '</br>Now yo can use your token to get restaurants...');
                         }
                     }
                 });
@@ -33,54 +30,7 @@
             }
         }
         </script>
-        <!-- End Google Login -->
-        <!-- Facebook Login -->
-        <script>
-          window.fbAsyncInit = function() {
-            FB.init({
-              appId      : '1275484315798338',
-              xfbml      : true,
-              version    : 'v2.5'
-            });
-          };
-
-          (function(d, s, id){
-             var js, fjs = d.getElementsByTagName(s)[0];
-             if (d.getElementById(id)) {return;}
-             js = d.createElement(s); js.id = id;
-             js.src = "//connect.facebook.net/en_US/sdk.js";
-             fjs.parentNode.insertBefore(js, fjs);
-           }(document, 'script', 'facebook-jssdk'));
-        </script>
-        <script type="text/javascript">
-        function sendTokenToServer() {
-            var access_token = FB.getAuthResponse()['accessToken'];
-            console.log('Welcome! Fetching your access token...');
-            console.log(access_token);
-            FB.api('/me', function(response){
-                console.log('Successful login for: ' + response.name);
-                $.ajax({
-                    type: 'POST',
-                    url: '/fbconnect?state={{STATE}}',
-                    processData: false,
-                    data: access_token,
-                    contentType: 'application/octet-stream; charset=utf-8',
-                    success: function(result) {
-                        // Handle or verify the server response if necessary.
-                        if (result) {
-                            $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...');
-                            setTimeout(function() {
-                                window.location.href = '/restaurants';
-                            }, 3000);
-                        } else {
-                            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-                        }
-                    }
-                });
-            });
-        }
-        </script>
-        <!-- End Facebook Login -->
+        <!-- End Google Login -->        
         <div id="signInButton">
             <span class="g-signin"
                 data-scope="email"
@@ -93,10 +43,5 @@
             </span>
         </div>
         <div id="result"></div>
-        <button>
-            <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
-                <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
-            </fb:login-button>
-        </button>      
     </body>
 </html>

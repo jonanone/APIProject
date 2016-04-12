@@ -135,6 +135,14 @@ def getUserById(session, user_id):
         return None
 
 
+def getUserByEmail(session, email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user
+    except:
+        return None
+
+
 def getUserWithToken(session, token):
     user_id = User.verify_auth_token(token)
     if user_id:
@@ -146,6 +154,7 @@ def getUserWithToken(session, token):
 
 def createUser(session, login_session):
     newUser = User(name=login_session['username'],
+                   username=login_session['username'],
                    email=login_session['email'],
                    picture=login_session['picture'])
     session.add(newUser)
