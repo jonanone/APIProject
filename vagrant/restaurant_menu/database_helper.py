@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import inspect
-from database_setup import Base, Restaurant, MenuItem, User
+from models import Base, Restaurant, MenuItem, User
 
 
 # Init database session
@@ -119,11 +119,28 @@ def addUser(session, username, password):
     return user
 
 
-def getUser(session, username):
+def getUserByUsername(session, username):
     try:
         user = session.query(User).filter_by(username=username).one()
         return user
     except:
+        return None
+
+
+def getUserById(session, user_id):
+    try:
+        user = session.query(User).filter_by(id=user_id).one()
+        return user
+    except:
+        return None
+
+
+def getUserWithToken(session, token):
+    user_id = User.verify_auth_token(token)
+    if user_id:
+        user = getUserById(session, user_id)
+        return user
+    else:
         return None
 
 
@@ -136,11 +153,6 @@ def createUser(session, login_session):
     user = session.query(User).filter_by(email=login_session['email']).one()
     print 'User %s created succesfully' % user.name
     return user.id
-
-
-def getUserInfo(session, user_id):
-    user = session.query(User).filter_by(id=user_id).one()
-    return user
 
 
 def getUserId(session, email):

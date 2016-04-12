@@ -6,6 +6,8 @@ from flask import make_response
 from flask.ext.httpauth import HTTPBasicAuth
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
+from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer,
+                          BadSignature, SignatureExpired)
 import httplib2
 import json
 import random
@@ -18,8 +20,8 @@ from database_helper import add_menu_item, edit_menu_item, delete_menu_item
 from database_helper import get_menu_item, get_restaurant
 from database_helper import get_restaurants, get_restaurant_items
 from database_helper import get_ordered_restaurants
-from database_helper import createUser, getUserInfo, getUserId
-from database_helper import getUser, addUser
+from database_helper import createUser, getUserId, getUserById
+from database_helper import getUserByUsername, addUser, getUserWithToken
 from utils import findARestaurant
 
 import sys
@@ -98,17 +100,27 @@ def new_user():
     password = request.json.get('password')
     if username is None or password is None:
         abort(400)  # missing arguments
-    if getUser(session, username) is not None:
+    if getUserByUsername(session, username) is not None:
         abort(400)  # existing user
     user = addUser(session, username, password)
     return jsonify({'username': user.username}), 201
 
 
+@app.route('/token')
+@auth.login_required
+def get_auth_token():
+    token = g.user.generate_auth_token()
+    return jsonify({'token': token.decode('ascii')})
+
+
 @auth.verify_password
-def verify_password(username, password):
-    user = getUser(session, username)
-    if not user or not user.verify_password(password):
-        return False
+def verify_password(username_or_token, password):
+    # Check if is a token first
+    user = getUserWithToken(session, username_or_token)
+    if not user:
+        user = getUserByUsername(session, username_or_token)
+        if not user or not user.verify_password(password):
+            return False
     g.user = user
     return True
 
@@ -201,7 +213,7 @@ def gconnect():
         userId = getUserId(session, login_session.get('email'))
     if userId is None:
         userId = createUser(session, login_session)
-    user = getUserInfo(session, userId)
+    user = getUserById(session, userId)
     login_session['user_id'] = userId
     print 'Hello %s, welcome to Restaurant Menu APP' % user.name
 
