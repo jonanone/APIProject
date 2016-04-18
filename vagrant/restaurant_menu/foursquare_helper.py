@@ -15,6 +15,7 @@ def getCategoryId(categoryName):
 
     result = json.loads(content)
     categories = result['response']['categories']
+    print categories
     for category in categories:
         lowerName = category['name'].lower()
         if categoryName.lower() in lowerName:
@@ -44,6 +45,26 @@ def findNearbyRestaurantsByMealType(latitude,
             mealType,
             radius,
             categoryId)
+           )
+    h = httplib2.Http()
+    response, content = h.request(url, 'GET')
+    result = json.loads(content)
+    return result
+
+
+def findNearbyVenueByMealType(latitude,
+                              longitude,
+                              mealType):
+    geoLocation = str(latitude) + ',' + str(longitude)
+    radius = "10000"
+    url = ('https://api.foursquare.com/v2/venues/search?client_id=%s&'
+           'client_secret=%s&v=20130815&ll=%s&query=%s&intent=browse&'
+           'radius=%s' %
+           (FOURSQUARE_CLIENT_ID,
+            FOURSQUARE_CLIENT_SECRET,
+            geoLocation,
+            mealType,
+            radius)
            )
     h = httplib2.Http()
     response, content = h.request(url, 'GET')

@@ -1,7 +1,7 @@
 import sys
 import codecs
 from geocode import getGeocodeLocation
-from foursquare_helper import findNearbyRestaurantsByMealType
+from foursquare_helper import findNearbyVenueByMealType
 from foursquare_helper import getVenuePhotos
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 sys.stderr = codecs.getwriter('utf8')(sys.stderr)
@@ -9,7 +9,7 @@ sys.stderr = codecs.getwriter('utf8')(sys.stderr)
 
 def findARestaurant(mealType, location):
     latitude, longitude = getGeocodeLocation(location)
-    venues = findNearbyRestaurantsByMealType(latitude, longitude, mealType)
+    venues = findNearbyVenueByMealType(latitude, longitude, mealType)
     if venues['response']['venues']:
         restaurant = venues['response']['venues'][0]
         photos = getVenuePhotos(restaurant['id'])

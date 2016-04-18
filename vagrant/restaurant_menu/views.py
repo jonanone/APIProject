@@ -175,12 +175,13 @@ def login(provider):
         stored_access_token = login_session.get('access_token')
         stored_gplus_id = login_session.get('gplus_id')
         if stored_access_token is not None and gplus_id == stored_gplus_id:
-            response = make_response(
-                json.dumps('Current user is already connected.'), 200)
+            # response = make_response(
+            #     json.dumps('Current user is already connected.'), 200)
             print "Current user already connected."
-            print "Stored acces token now is %s" % stored_access_token
-            response.headers['Content-Type'] = 'application/json'
-            return response
+            # print "Stored acces token now is %s" % stored_access_token
+            # response.headers['Content-Type'] = 'application/json'
+            return jsonify({'token': stored_access_token.decode('ascii')})
+            # return response
 
         # Store the access token in the session for later use.
         login_session['access_token'] = credentials.access_token
